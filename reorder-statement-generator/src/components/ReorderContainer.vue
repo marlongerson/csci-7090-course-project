@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 w-100">
+  <div>
     <div class="border border-yellow-200">
       <div class="bg-blue-500 text-white font-bold px-2 py-0.5">Order Statement Exercise</div>
       <div class="text-center space-y-6 py-4 max-w-sm mx-auto">
