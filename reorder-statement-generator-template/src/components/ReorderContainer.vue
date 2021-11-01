@@ -9,7 +9,6 @@
         <div class="space-y-2">
           <ul class="text-left mx-auto" v-for="(item, i) in reorderedItems" :key="i">
             <li
-              class="border border-green-600 px-2 cursor-pointer"
               draggable="true"
               :ref="`li${i}`"
               @dragstart="(e) => onDragStart(e, i)"
@@ -28,11 +27,16 @@
         </div>
       </div>
     </div>
-    <Modal title="Correct Order" :open="open" @closed="open = false" :body="items.join('\n')" />
+    <Modal
+      title="Correct Order"
+      :open="showAnswerModal"
+      @closed="showAnswerModal = false"
+      :body="items.join('\n')"
+    />
     <Modal
       title="Congratulations"
-      :open="correct"
-      @closed="correct = false"
+      :open="showCorrectModal"
+      @closed="showCorrectModal = false"
       body="You are correct!"
     />
   </div>
@@ -54,8 +58,9 @@ export default {
   },
   data() {
     return {
-      open: false,
       correct: false,
+      showAnswerModal: false,
+      showCorrectModal: false,
       reorderedItems: [],
       dragIndex: 0,
       dragText: '',
@@ -66,44 +71,69 @@ export default {
   },
   methods: {
     showAnswer() {
-      this.open = true;
+      this.showAnswerModal = true;
     },
     reset() {
+      this.correct = false;
+      for (let x = 0; x < this.items.length; x += 1) {
+        this.$refs[`li${x}`].classList.remove('correct');
+      }
       this.reorderedItems = [...this.shuffledItems];
     },
     isCorrect() {
       return this.reorderedItems.every((item, i) => item === this.items[i]);
     },
     onDragStart(e, i) {
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/html', e.target.parentNode);
-      this.dragIndex = i;
-      this.dragText = this.reorderedItems[i];
+      if (!this.correct) {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', e.target.parentNode);
+        this.dragIndex = i;
+        this.dragText = this.reorderedItems[i];
+      }
     },
     onDragOver(i) {
-      const temp = [...this.reorderedItems];
-      temp.splice(this.dragIndex, 1);
-      temp.splice(i, 0, this.reorderedItems[this.dragIndex]);
-      this.reorderedItems = temp;
-      for (let x = 0; x < this.items.length; x += 1) {
-        this.$refs[`li${x}`].classList.add('border');
-        this.$refs[`li${x}`].classList.add('border-green-600');
+      if (!this.correct) {
+        const temp = [...this.reorderedItems];
+        temp.splice(this.dragIndex, 1);
+        temp.splice(i, 0, this.reorderedItems[this.dragIndex]);
+        this.reorderedItems = temp;
+        for (let x = 0; x < this.items.length; x += 1) {
+          this.$refs[`li${x}`].classList.remove('dragged-over');
+        }
+        this.$refs[`li${this.dragIndex}`].innerHTML = '&nbsp;';
+        this.$refs[`li${this.dragIndex}`].classList.add('dragged-over');
+        this.dragIndex = i;
       }
-      this.$refs[`li${this.dragIndex}`].innerHTML = '&nbsp;';
-      this.$refs[`li${this.dragIndex}`].classList.remove('border');
-      this.$refs[`li${this.dragIndex}`].classList.remove('border-green-600');
-      this.dragIndex = i;
     },
     onDragEnd() {
-      this.$refs[`li${this.dragIndex}`].innerText = this.dragText;
-      this.$refs[`li${this.dragIndex}`].classList.add('border');
-      this.$refs[`li${this.dragIndex}`].classList.add('border-green-600');
-      if (this.isCorrect()) {
-        this.correct = true;
+      if (!this.correct) {
+        this.$refs[`li${this.dragIndex}`].innerText = this.dragText;
+        this.$refs[`li${this.dragIndex}`].classList.remove('dragged-over');
+        if (this.isCorrect()) {
+          this.correct = true;
+          for (let x = 0; x < this.items.length; x += 1) {
+            this.$refs[`li${x}`].classList.add('correct');
+          }
+          this.showCorrectModal = true;
+        }
+        this.dragIndex = -1;
+        this.dragText = null;
       }
-      this.dragIndex = -1;
-      this.dragText = null;
     },
   },
 };
 </script>
+
+<style scoped>
+li {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+li:not(.correct) {
+  @apply border border-green-500 px-2 cursor-pointer;
+}
+
+li.dragged-over {
+  border: 1px dashed gray;
+}
+</style>
