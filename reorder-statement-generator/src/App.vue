@@ -47,13 +47,18 @@
         </form>
       </div>
     </div>
-    <div v-if="previewing" class="p-4">
+    <div v-if="previewing" class="space-y-4 p-4">
       <ReorderContainer
         :items="this.$refs.codeTextArea.value.split('\n')"
         :shuffledItems="this.$refs.reorderTextArea.value.split('\n')"
         statement="TODO TODO TODO"
       />
-      <button @click="previewing = false">Back</button>
+      <button
+        @click="previewing = false"
+        class="bg-gray-200 hover:bg-gray-300 ml-auto px-4 py-2 text-gray-800 rounded"
+      >
+        Back
+      </button>
     </div>
   </div>
 </template>
