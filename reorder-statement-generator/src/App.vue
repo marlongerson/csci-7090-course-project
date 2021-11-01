@@ -65,6 +65,7 @@
 
 <script>
 import ReorderContainer from './components/ReorderContainer.vue';
+import generate from './app/generate';
 
 export default {
   components: {
@@ -91,7 +92,19 @@ export default {
     preview() {
       this.previewing = true;
     },
-    download() {},
+    download() {
+      const html = generate(
+        [...this.$refs.codeTextArea.value.split('\n')],
+        [...this.$refs.reorderTextArea.value.split('\n')],
+      );
+      const element = document.createElement('a');
+      element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(html)}`);
+      element.setAttribute('download', 'output.html');
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    },
   },
 };
 </script>
