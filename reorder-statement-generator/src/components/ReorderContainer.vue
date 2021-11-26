@@ -15,7 +15,7 @@
               @dragover="onDragOver(i)"
               @dragend="onDragEnd()"
             >
-              {{ item }}
+              {{ item.replace(/ /g, '&nbsp;') }}
             </li>
           </ul>
         </div>
@@ -107,7 +107,7 @@ export default {
     },
     onDragEnd() {
       if (!this.correct) {
-        this.$refs[`li${this.dragIndex}`].innerText = this.dragText;
+        this.$refs[`li${this.dragIndex}`].innerHTML = this.dragText.replace(/ /g, '&nbsp;');
         this.$refs[`li${this.dragIndex}`].classList.remove('dragged-over');
         if (this.isCorrect()) {
           this.correct = true;
