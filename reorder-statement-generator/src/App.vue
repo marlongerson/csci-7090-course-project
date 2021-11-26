@@ -7,17 +7,19 @@
       <div class="max-w-5xl mx-auto mt-6 px-4">
         <form @submit="(e) => e.preventDefault()">
           <div class="space-y-2">
+            <label class="block">Question Statement</label>
+            <input class="border border-gray-300 w-full rounded p-2" ref="questionStatementInput"/>
             <label class="block">Code</label>
             <textarea
               ref="codeTextArea"
-              class="border border-gray-300 w-full rounded"
+              class="border border-gray-300 w-full rounded p-2"
               style="height: 200px"
               @input="reorder()"
             />
             <label class="block">Reordered</label>
             <textarea
               ref="reorderTextArea"
-              class="border border-gray-300 w-full rounded"
+              class="border border-gray-300 w-full rounded p-2"
               disabled
               style="height: 200px"
             />
@@ -51,7 +53,7 @@
       <ReorderContainer
         :items="this.$refs.codeTextArea.value.split('\n')"
         :shuffledItems="this.$refs.reorderTextArea.value.split('\n')"
-        statement="TODO TODO TODO"
+        :statement="this.$refs.questionStatementInput.value"
       />
       <button
         @click="previewing = false"
@@ -96,6 +98,7 @@ export default {
       const html = generate(
         [...this.$refs.codeTextArea.value.split('\n')],
         [...this.$refs.reorderTextArea.value.split('\n')],
+        this.$refs.questionStatementInput.value,
       );
       const element = document.createElement('a');
       element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(html)}`);
@@ -108,3 +111,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+textarea {
+  font-family: 'Courier New';
+}
+</style>
