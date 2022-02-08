@@ -69,6 +69,7 @@ export default {
       dragIndex: 0,
       dragText: '',
       dragStartX: 0,
+      dragStartTab: 0,
     };
   },
   created() {
@@ -99,6 +100,7 @@ export default {
         this.dragIndex = i;
         this.dragText = this.reorderedItems[i];
         this.dragStartX = e.clientX;
+        this.dragStartTab = this.reorderedTabs[i];
       }
     },
     onDragOver(e, i) {
@@ -115,7 +117,7 @@ export default {
         this.reorderedTabs = temp2;
         // Update current tab width based on dx.
         const dx = e.clientX - this.dragStartX;
-        this.reorderedTabs[i] = (dx - (dx % 40)) / 40;
+        this.reorderedTabs[i] = Math.max(0, this.dragStartTab + (dx - (dx % 40)) / 40);
         // Clear dragged-over class from all list items and set dragged-over class
         // to the dragged over list item.
         for (let x = 0; x < this.items.length; x += 1) {
