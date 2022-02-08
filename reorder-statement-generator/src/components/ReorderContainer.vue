@@ -94,6 +94,7 @@ export default {
         this.$refs[`li${x}`].classList.remove('correct');
       }
       this.reorderedItems = [...this.shuffledItems];
+      this.reorderedTabs = new Array(this.shuffledItems.length).fill(0);
     },
     isCorrect() {
       console.log(this.tabs);
