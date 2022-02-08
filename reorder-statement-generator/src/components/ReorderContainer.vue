@@ -16,7 +16,7 @@
               @dragend="onDragEnd()"
               :style="{ marginLeft: marginLeftFromTabLevel(reorderedTabs[i]) }"
             >
-              {{ item }}
+              {{ item.trim() }}
             </li>
           </ul>
         </div>
@@ -54,10 +54,15 @@ export default {
     statement: {
       type: String,
     },
-    items: [],
-    shuffledItems: [],
-    tabs: [],
-    shuffledTabs: [],
+    items: {
+      type: Array,
+    },
+    shuffledItems: {
+      type: Array,
+    },
+    tabs: {
+      type: Array,
+    },
   },
   data() {
     return {
@@ -74,7 +79,7 @@ export default {
   },
   created() {
     this.reorderedItems = [...this.shuffledItems];
-    this.reorderedTabs = [...this.shuffledTabs];
+    this.reorderedTabs = new Array(this.shuffledItems.length).fill(0);
   },
   methods: {
     marginLeftFromTabLevel(tab) {
@@ -91,7 +96,10 @@ export default {
       this.reorderedItems = [...this.shuffledItems];
     },
     isCorrect() {
-      return this.reorderedItems.every((item, i) => item === this.items[i]);
+      console.log(this.tabs);
+      console.log(this.reorderedTabs);
+      return this.reorderedItems.every((item, i) => item === this.items[i])
+          && this.reorderedTabs.every((tab, i) => tab === this.tabs[i]);
     },
     onDragStart(e, i) {
       if (!this.correct) {
@@ -124,14 +132,14 @@ export default {
         for (let x = 0; x < this.items.length; x += 1) {
           this.$refs[`li${x}`].classList.remove('dragged-over');
         }
-        this.$refs[`li${this.dragIndex}`].innerText = this.dragText;
+        this.$refs[`li${this.dragIndex}`].innerText = this.dragText.trim();
         this.$refs[`li${this.dragIndex}`].classList.add('dragged-over');
         this.dragIndex = i;
       }
     },
     onDragEnd() {
       if (!this.correct) {
-        this.$refs[`li${this.dragIndex}`].innerHTML = this.dragText.replace(/ /g, '&nbsp;');
+        this.$refs[`li${this.dragIndex}`].innerHTML = this.dragText.trim();
         this.$refs[`li${this.dragIndex}`].classList.remove('dragged-over');
         if (this.isCorrect()) {
           this.correct = true;

@@ -12,14 +12,14 @@
             <label class="block">Code</label>
             <textarea
               ref="codeTextArea"
-              class="border border-gray-300 w-full rounded p-2"
+              class="border border-gray-300 w-full rounded p-2 font-mono"
               style="height: 200px"
               @input="reorder()"
             />
             <label class="block">Reordered</label>
             <textarea
               ref="reorderTextArea"
-              class="border border-gray-300 w-full rounded p-2"
+              class="border border-gray-300 w-full rounded p-2 font-mono"
               disabled
               style="height: 200px"
             />
@@ -51,11 +51,10 @@
     </div>
     <div v-if="previewing" class="space-y-4 p-4">
       <ReorderContainer
-        :items="this.$refs.codeTextArea.value.split('\n')"
-        :shuffledItems="this.$refs.reorderTextArea.value.split('\n')"
+        :items="this.getItems()"
+        :shuffledItems="this.getShuffledItems()"
         :statement="this.$refs.questionStatementInput.value"
-        :tabs="[0,0,0]"
-        :shuffledTabs="[0,0,0]"
+        :tabs="this.getTabLevels()"
       />
       <button
         @click="previewing = false"
@@ -81,14 +80,39 @@ export default {
     };
   },
   methods: {
+    getItems() {
+      return this.$refs.codeTextArea.value.split('\n');
+    },
+    getShuffledItems() {
+      return this.$refs.reorderTextArea.value.split('\n');
+    },
+    getTabLevels() {
+      const items = this.getItems();
+      const result = new Array(items.length).fill(0);
+      for (let i = 0; i < items.length; i += 1) {
+        result[i] = this.countLeadingSpaces(items[i]) / 4;
+      }
+      return result;
+    },
+    countLeadingSpaces(s) {
+      let result = 0;
+      for (let i = 0; i < s.length; i += 1) {
+        if (s[i] === ' ') {
+          result += 1;
+        } else {
+          break;
+        }
+      }
+      return result;
+    },
     reorder() {
       const items = [...this.$refs.codeTextArea.value.split('\n')];
       let currentIndex = items.length;
       while (currentIndex !== 0) {
         const randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex -= 1;
-        const t = items[currentIndex].trim();
-        items[currentIndex] = items[randomIndex].trim();
+        const t = items[currentIndex];
+        items[currentIndex] = items[randomIndex];
         items[randomIndex] = t;
       }
       this.$refs.reorderTextArea.value = items.join('\n');
@@ -113,9 +137,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-textarea {
-  font-family: 'Courier New';
-}
-</style>
