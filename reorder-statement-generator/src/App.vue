@@ -6,7 +6,6 @@
       </div>
       <div class="max-w-5xl mx-auto mt-6 px-4">
         <form @submit="(e) => e.preventDefault()">
-      <Container :maxIndentations="4" :maxLines="10"/>
           <div class="space-y-2">
             <label class="block">Question Statement</label>
             <input class="border border-gray-300 w-full rounded p-2" ref="questionStatementInput"/>
@@ -67,14 +66,12 @@
 </template>
 
 <script>
-import Container from './components/Container.vue';
 import ReorderContainer from './components/ReorderContainer.vue';
 import generate from './app/generate';
 
 export default {
   components: {
     ReorderContainer,
-    Container,
   },
   data() {
     return {
@@ -88,8 +85,8 @@ export default {
       while (currentIndex !== 0) {
         const randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex -= 1;
-        const t = items[currentIndex];
-        items[currentIndex] = items[randomIndex];
+        const t = items[currentIndex].trim();
+        items[currentIndex] = items[randomIndex].trim();
         items[randomIndex] = t;
       }
       this.$refs.reorderTextArea.value = items.join('\n');

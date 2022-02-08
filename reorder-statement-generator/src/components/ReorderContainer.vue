@@ -6,7 +6,7 @@
         <p>
           {{ statement }}
         </p>
-        <div class="space-y-2">
+        <div class="space-y-2 bg-blue-50 p-4 rounded">
           <ul class="text-left mx-auto" v-for="(item, i) in reorderedItems" :key="i">
             <li
               draggable="true"
@@ -100,7 +100,7 @@ export default {
         for (let x = 0; x < this.items.length; x += 1) {
           this.$refs[`li${x}`].classList.remove('dragged-over');
         }
-        this.$refs[`li${this.dragIndex}`].innerHTML = '&nbsp;';
+        this.$refs[`li${this.dragIndex}`].innerText = this.dragText;
         this.$refs[`li${this.dragIndex}`].classList.add('dragged-over');
         this.dragIndex = i;
       }
@@ -130,10 +130,10 @@ li {
 }
 
 li:not(.correct) {
-  @apply border border-green-500 px-2 cursor-pointer;
+  @apply bg-white border border-gray-300 p-2 cursor-pointer rounded;
 }
 
 li.dragged-over {
-  border: 1px dashed gray;
+  @apply border-2 border-dashed border-blue-500;
 }
 </style>
