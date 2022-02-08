@@ -51,8 +51,8 @@
     </div>
     <div v-if="previewing" class="space-y-4 p-4">
       <ReorderContainer
-        :items="this.$refs.codeTextArea.value.split('\n')"
-        :shuffledItems="this.$refs.reorderTextArea.value.split('\n')"
+        :items="this.getItems()"
+        :shuffledItems="this.getShuffledItems()"
         :statement="this.$refs.questionStatementInput.value"
         :tabs="this.getTabLevels()"
       />
@@ -80,6 +80,9 @@ export default {
     };
   },
   methods: {
+    getItems() {
+      return this.$refs.codeTextArea.value.split('\n');
+    },
     getShuffledItems() {
       return this.$refs.reorderTextArea.value.split('\n');
     },
