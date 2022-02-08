@@ -118,6 +118,7 @@ export default {
         // Update current tab width based on dx.
         const dx = e.clientX - this.dragStartX;
         this.reorderedTabs[i] = Math.max(0, this.dragStartTab + (dx - (dx % 40)) / 40);
+        this.reorderedTabs[i] = Math.min(5, this.reorderedTabs[i]);
         // Clear dragged-over class from all list items and set dragged-over class
         // to the dragged over list item.
         for (let x = 0; x < this.items.length; x += 1) {
