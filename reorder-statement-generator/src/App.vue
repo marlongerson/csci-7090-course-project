@@ -54,6 +54,8 @@
         :items="this.$refs.codeTextArea.value.split('\n')"
         :shuffledItems="this.$refs.reorderTextArea.value.split('\n')"
         :statement="this.$refs.questionStatementInput.value"
+        :tabs="[0,0,0]"
+        :shuffledTabs="[0,0,0]"
       />
       <button
         @click="previewing = false"

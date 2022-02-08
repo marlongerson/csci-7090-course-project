@@ -12,8 +12,9 @@
               draggable="true"
               :ref="`li${i}`"
               @dragstart="(e) => onDragStart(e, i)"
-              @dragover="onDragOver(i)"
+              @dragover="(e) => onDragOver(e, i)"
               @dragend="onDragEnd()"
+              :style="{ marginLeft: marginLeftFromTabLevel(reorderedTabs[i]) }"
             >
               {{ item }}
             </li>
@@ -55,6 +56,8 @@ export default {
     },
     items: [],
     shuffledItems: [],
+    tabs: [],
+    shuffledTabs: [],
   },
   data() {
     return {
@@ -62,14 +65,20 @@ export default {
       showAnswerModal: false,
       showCorrectModal: false,
       reorderedItems: [],
+      reorderedTabs: [],
       dragIndex: 0,
       dragText: '',
+      dragStartX: 0,
     };
   },
   created() {
     this.reorderedItems = [...this.shuffledItems];
+    this.reorderedTabs = [...this.shuffledTabs];
   },
   methods: {
+    marginLeftFromTabLevel(tab) {
+      return `${tab * 40}px`;
+    },
     showAnswer() {
       this.showAnswerModal = true;
     },
@@ -89,14 +98,26 @@ export default {
         e.dataTransfer.setData('text/html', e.target.parentNode);
         this.dragIndex = i;
         this.dragText = this.reorderedItems[i];
+        this.dragStartX = e.clientX;
       }
     },
-    onDragOver(i) {
+    onDragOver(e, i) {
       if (!this.correct) {
+        // Reorder texts.
         const temp = [...this.reorderedItems];
         temp.splice(this.dragIndex, 1);
         temp.splice(i, 0, this.reorderedItems[this.dragIndex]);
         this.reorderedItems = temp;
+        // Reorder tabs.
+        const temp2 = [...this.reorderedTabs];
+        temp2.splice(this.dragIndex, 1);
+        temp2.splice(i, 0, this.reorderedTabs[this.dragIndex]);
+        this.reorderedTabs = temp2;
+        // Update current tab width based on dx.
+        const dx = e.clientX - this.dragStartX;
+        this.reorderedTabs[i] = (dx - (dx % 40)) / 40;
+        // Clear dragged-over class from all list items and set dragged-over class
+        // to the dragged over list item.
         for (let x = 0; x < this.items.length; x += 1) {
           this.$refs[`li${x}`].classList.remove('dragged-over');
         }
