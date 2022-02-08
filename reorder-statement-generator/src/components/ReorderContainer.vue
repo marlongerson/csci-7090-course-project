@@ -2,7 +2,7 @@
   <div>
     <div class="border border-yellow-200">
       <div class="bg-blue-500 text-white font-bold px-2 py-0.5">Order Statement Exercise</div>
-      <div class="text-center space-y-6 py-4 max-w-sm mx-auto">
+      <div class="text-center space-y-6 py-4 max-w-3xl mx-auto">
         <p>
           {{ statement }}
         </p>
@@ -15,7 +15,7 @@
               @dragover="onDragOver(i)"
               @dragend="onDragEnd()"
             >
-              {{ item.replace(/ /g, '&nbsp;') }}
+              {{ item }}
             </li>
           </ul>
         </div>
