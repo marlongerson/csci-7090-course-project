@@ -87,10 +87,10 @@ export default {
       return this.$refs.reorderTextArea.value.split('\n');
     },
     getTabLevels() {
-      const shuffledItems = this.getShuffledItems();
-      const result = new Array(shuffledItems.length).fill(0);
-      for (let i = 0; i < shuffledItems.length; i += 1) {
-        result[i] = this.countLeadingSpaces(shuffledItems[i]) / 4;
+      const items = this.getItems();
+      const result = new Array(items.length).fill(0);
+      for (let i = 0; i < items.length; i += 1) {
+        result[i] = this.countLeadingSpaces(items[i]) / 4;
       }
       return result;
     },
