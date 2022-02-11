@@ -2,20 +2,21 @@
   <div>
     <div class="border border-yellow-200">
       <div class="bg-blue-500 text-white font-bold px-2 py-0.5">Order Statement Exercise</div>
-      <div class="text-center space-y-6 py-4 max-w-sm mx-auto">
+      <div class="text-center space-y-6 py-4 max-w-3xl mx-auto">
         <p>
           {{ statement }}
         </p>
-        <div class="space-y-2">
+        <div class="space-y-2 bg-blue-50 p-4 rounded">
           <ul class="text-left mx-auto" v-for="(item, i) in reorderedItems" :key="i">
             <li
-              draggable="true"
-              :ref="`li${i}`"
-              @dragstart="(e) => onDragStart(e, i)"
-              @dragover="onDragOver(i)"
-              @dragend="onDragEnd()"
+                draggable="true"
+                :ref="`li${i}`"
+                @dragstart="(e) => onDragStart(e, i)"
+                @dragover="(e) => onDragOver(e, i)"
+                @dragend="onDragEnd()"
+                :style="{ marginLeft: marginLeftFromTabLevel(reorderedTabs[i]) }"
             >
-              {{ item.replace(/ /g, '&nbsp;') }}
+              {{ item.trim() }}
             </li>
           </ul>
         </div>
@@ -28,16 +29,16 @@
       </div>
     </div>
     <Modal
-      title="Correct Order"
-      :open="showAnswerModal"
-      @closed="showAnswerModal = false"
-      :body="items.join('\n')"
+        title="Correct Order"
+        :open="showAnswerModal"
+        @closed="showAnswerModal = false"
+        :body="items.join('\n')"
     />
     <Modal
-      title="Congratulations"
-      :open="showCorrectModal"
-      @closed="showCorrectModal = false"
-      body="You are correct!"
+        title="Congratulations"
+        :open="showCorrectModal"
+        @closed="showCorrectModal = false"
+        body="You are correct!"
     />
   </div>
 </template>
@@ -53,8 +54,15 @@ export default {
     statement: {
       type: String,
     },
-    items: [],
-    shuffledItems: [],
+    items: {
+      type: Array,
+    },
+    shuffledItems: {
+      type: Array,
+    },
+    tabs: {
+      type: Array,
+    },
   },
   data() {
     return {
@@ -62,14 +70,21 @@ export default {
       showAnswerModal: false,
       showCorrectModal: false,
       reorderedItems: [],
+      reorderedTabs: [],
       dragIndex: 0,
       dragText: '',
+      dragStartX: 0,
+      dragStartTab: 0,
     };
   },
   created() {
     this.reorderedItems = [...this.shuffledItems];
+    this.reorderedTabs = new Array(this.shuffledItems.length).fill(0);
   },
   methods: {
+    marginLeftFromTabLevel(tab) {
+      return `${tab * 40}px`;
+    },
     showAnswer() {
       this.showAnswerModal = true;
     },
@@ -79,9 +94,11 @@ export default {
         this.$refs[`li${x}`].classList.remove('correct');
       }
       this.reorderedItems = [...this.shuffledItems];
+      this.reorderedTabs = new Array(this.shuffledItems.length).fill(0);
     },
     isCorrect() {
-      return this.reorderedItems.every((item, i) => item === this.items[i]);
+      return this.reorderedItems.every((item, i) => item === this.items[i])
+          && this.reorderedTabs.every((tab, i) => tab === this.tabs[i]);
     },
     onDragStart(e, i) {
       if (!this.correct) {
@@ -89,25 +106,39 @@ export default {
         e.dataTransfer.setData('text/html', e.target.parentNode);
         this.dragIndex = i;
         this.dragText = this.reorderedItems[i];
+        this.dragStartX = e.clientX;
+        this.dragStartTab = this.reorderedTabs[i];
       }
     },
-    onDragOver(i) {
+    onDragOver(e, i) {
       if (!this.correct) {
+        // Reorder texts.
         const temp = [...this.reorderedItems];
         temp.splice(this.dragIndex, 1);
         temp.splice(i, 0, this.reorderedItems[this.dragIndex]);
         this.reorderedItems = temp;
+        // Reorder tabs.
+        const temp2 = [...this.reorderedTabs];
+        temp2.splice(this.dragIndex, 1);
+        temp2.splice(i, 0, this.reorderedTabs[this.dragIndex]);
+        this.reorderedTabs = temp2;
+        // Update current tab width based on dx.
+        const dx = e.clientX - this.dragStartX;
+        this.reorderedTabs[i] = Math.max(0, this.dragStartTab + (dx - (dx % 40)) / 40);
+        this.reorderedTabs[i] = Math.min(5, this.reorderedTabs[i]);
+        // Clear dragged-over class from all list items and set dragged-over class
+        // to the dragged over list item.
         for (let x = 0; x < this.items.length; x += 1) {
           this.$refs[`li${x}`].classList.remove('dragged-over');
         }
-        this.$refs[`li${this.dragIndex}`].innerHTML = '&nbsp;';
+        this.$refs[`li${this.dragIndex}`].innerText = this.dragText.trim();
         this.$refs[`li${this.dragIndex}`].classList.add('dragged-over');
         this.dragIndex = i;
       }
     },
     onDragEnd() {
       if (!this.correct) {
-        this.$refs[`li${this.dragIndex}`].innerHTML = this.dragText.replace(/ /g, '&nbsp;');
+        this.$refs[`li${this.dragIndex}`].innerHTML = this.dragText.trim();
         this.$refs[`li${this.dragIndex}`].classList.remove('dragged-over');
         if (this.isCorrect()) {
           this.correct = true;
@@ -130,10 +161,10 @@ li {
 }
 
 li:not(.correct) {
-  @apply border border-green-500 px-2 cursor-pointer;
+  @apply bg-white border border-gray-300 p-2 cursor-pointer rounded;
 }
 
 li.dragged-over {
-  border: 1px dashed gray;
+  @apply border-2 border-dashed border-blue-500;
 }
 </style>

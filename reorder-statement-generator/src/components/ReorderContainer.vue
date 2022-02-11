@@ -97,8 +97,6 @@ export default {
       this.reorderedTabs = new Array(this.shuffledItems.length).fill(0);
     },
     isCorrect() {
-      console.log(this.tabs);
-      console.log(this.reorderedTabs);
       return this.reorderedItems.every((item, i) => item === this.items[i])
           && this.reorderedTabs.every((tab, i) => tab === this.tabs[i]);
     },

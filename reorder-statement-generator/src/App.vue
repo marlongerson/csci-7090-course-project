@@ -125,6 +125,7 @@ export default {
         [...this.$refs.codeTextArea.value.split('\n')],
         [...this.$refs.reorderTextArea.value.split('\n')],
         this.$refs.questionStatementInput.value,
+        this.getTabLevels(),
       );
       const element = document.createElement('a');
       element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(html)}`);
