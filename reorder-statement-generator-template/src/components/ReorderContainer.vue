@@ -6,19 +6,29 @@
         <p>
           {{ statement }}
         </p>
-        <div class="space-y-2 bg-blue-50 p-4 rounded">
-          <ul class="text-left mx-auto" v-for="(item, i) in reorderedItems" :key="i">
-            <li
+        <div class="relative bg-blue-50 p-4 rounded">
+          <template v-if="!this.correct">
+            <div class="absolute bottom-0 top-0 border-gray-300 border-l" />
+            <div class="absolute bottom-0 top-0 left-indent-1 border-gray-300 border-l" />
+            <div class="absolute bottom-0 top-0 left-indent-2 border-gray-300 border-l" />
+            <div class="absolute bottom-0 top-0 left-indent-3 border-gray-300 border-l" />
+            <div class="absolute bottom-0 top-0 left-indent-4 border-gray-300 border-l" />
+            <div class="absolute bottom-0 top-0 left-indent-5 border-gray-300 border-l" />
+          </template>
+          <div class="relative space-y-2">
+            <ul class="text-left mx-auto" v-for="(item, i) in reorderedItems" :key="i">
+              <li
                 draggable="true"
                 :ref="`li${i}`"
                 @dragstart="(e) => onDragStart(e, i)"
                 @dragover="(e) => onDragOver(e, i)"
                 @dragend="onDragEnd()"
                 :style="{ marginLeft: marginLeftFromTabLevel(reorderedTabs[i]) }"
-            >
-              {{ item.trim() }}
-            </li>
-          </ul>
+              >
+                {{ item.trim() }}
+              </li>
+            </ul>
+          </div>
         </div>
         <div class="space-x-2">
           <button class="bg-blue-500 px-4 py-1 rounded text-white" @click="showAnswer()">
@@ -29,16 +39,16 @@
       </div>
     </div>
     <Modal
-        title="Correct Order"
-        :open="showAnswerModal"
-        @closed="showAnswerModal = false"
-        :body="items.join('\n')"
+      title="Correct Order"
+      :open="showAnswerModal"
+      @closed="showAnswerModal = false"
+      :body="createBody()"
     />
     <Modal
-        title="Congratulations"
-        :open="showCorrectModal"
-        @closed="showCorrectModal = false"
-        body="You are correct!"
+      title="Congratulations"
+      :open="showCorrectModal"
+      @closed="showCorrectModal = false"
+      body="You are correct!"
     />
   </div>
 </template>
@@ -82,6 +92,16 @@ export default {
     this.reorderedTabs = new Array(this.shuffledItems.length).fill(0);
   },
   methods: {
+    createBody() {
+      let body = '';
+      for (let i = 0; i < this.items.length; i += 1) {
+        for (let j = 0; j < this.tabs[i] * 4; j += 1) {
+          body += '&nbsp;';
+        }
+        body += `${this.items[i]}\n`;
+      }
+      return body;
+    },
     marginLeftFromTabLevel(tab) {
       return `${tab * 40}px`;
     },
@@ -97,8 +117,10 @@ export default {
       this.reorderedTabs = new Array(this.shuffledItems.length).fill(0);
     },
     isCorrect() {
-      return this.reorderedItems.every((item, i) => item === this.items[i])
-          && this.reorderedTabs.every((tab, i) => tab === this.tabs[i]);
+      return (
+        this.reorderedItems.every((item, i) => item === this.items[i]) && // eslint-disable-line
+        this.reorderedTabs.every((tab, i) => tab === this.tabs[i])
+      );
     },
     onDragStart(e, i) {
       if (!this.correct) {
@@ -156,6 +178,30 @@ export default {
 </script>
 
 <style scoped>
+.left-indent-1 {
+  left: 56px;
+}
+
+.highlighted {
+  @apply border-l-2 border-blue-500;
+}
+
+.left-indent-2 {
+  left: 96px;
+}
+
+.left-indent-3 {
+  left: 136px;
+}
+
+.left-indent-4 {
+  left: 176px;
+}
+
+.left-indent-5 {
+  left: 216px;
+}
+
 li {
   font-family: 'Courier New', Courier, monospace;
 }

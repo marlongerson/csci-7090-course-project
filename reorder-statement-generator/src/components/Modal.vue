@@ -60,9 +60,7 @@
                     {{ title }}
                   </DialogTitle>
                   <div class="mt-2">
-                    <p class="text-sm text-gray-500 whitespace-pre-line">
-                      {{ body }}
-                    </p>
+                    <p class="text-sm text-gray-500 whitespace-pre-line" v-html="body" />
                   </div>
                 </div>
               </div>
