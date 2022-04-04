@@ -24,9 +24,8 @@
                 @dragover="(e) => onDragOver(e, i)"
                 @dragend="onDragEnd()"
                 :style="{ marginLeft: marginLeftFromTabLevel(reorderedTabs[i]) }"
-              >
-                {{ item.trim() }}
-              </li>
+                v-html="item"
+              ></li>
             </ul>
           </div>
         </div>
@@ -153,7 +152,7 @@ export default {
         for (let x = 0; x < this.items.length; x += 1) {
           this.$refs[`li${x}`].classList.remove('dragged-over');
         }
-        this.$refs[`li${this.dragIndex}`].innerText = this.dragText.trim();
+        this.$refs[`li${this.dragIndex}`].innerHTML = this.dragText.trim();
         this.$refs[`li${this.dragIndex}`].classList.add('dragged-over');
         this.dragIndex = i;
       }
