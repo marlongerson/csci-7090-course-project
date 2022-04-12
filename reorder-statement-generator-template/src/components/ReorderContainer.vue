@@ -117,7 +117,7 @@ export default {
     },
     isCorrect() {
       return (
-        this.reorderedItems.every((item, i) => item === this.items[i]) && // eslint-disable-line
+        this.reorderedItems.every((item, i) => item.trim() === this.items[i].trim()) && // eslint-disable-line
         this.reorderedTabs.every((tab, i) => tab === this.tabs[i])
       );
     },
